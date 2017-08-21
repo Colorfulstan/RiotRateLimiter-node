@@ -1,0 +1,7 @@
+--compiler ts:tsc
+--reporter spec
+--ui bdd
+--recursive
+--watch-extensions js
+build/**/test.js
+build/**/test/specs/**/*.js

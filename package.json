@@ -1,0 +1,136 @@
+{
+  "name": "riot-ratelimiter",
+  "version": "0.0.1",
+  "description": "A rate limiter handling rate-limits enforced by the riot-games api",
+  "keywords": [
+    "TypeScript",
+    "nodeJs",
+    "riot-api",
+    "ratelimiter"
+  ],
+  "author": "Jonas Krispin",
+  "repository": "colorfulstan/RiotRateLimiter-node",
+  "license": "MIT",
+  "private": false,
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "staged-mods-ok": "git-mods --staged_ok",
+    "no-mods": "git-mods",
+    "clean": "rimraf build coverage",
+    "clean:dist": "rimraf dist",
+    "lint": "tslint -c tslint.json src/**/*.ts",
+    "compile:build": "tsc",
+    "compile:dist": "tsc -p tsconfig.dist.json",
+    "compile:watch": "tsc -w",
+    "sh": "npm-sh",
+    "secure": "nsp check",
+    "check": "ncu -e 1",
+    "test-with-cover": "istanbul cover ./node_modules/mocha/bin/_mocha",
+    "test-without-cover": "mocha",
+    "remap-coverage:dist": "node ./scripts/remapped-coverage.js --force_min_cover true --output ./coverage/typescript",
+    "remap-coverage": "node ./scripts/remapped-coverage.js --force_min_cover=false --output ./coverage/typescript",
+    "coverage": "istanbul check-coverage ./coverage/typescript/coverage.json",
+    "build": "npm-run-batch",
+    "build:dist": "run-batch",
+    "build:watch": "cross-env NODE_ENV=production run-batch",
+    "test": "run-batch",
+    "test:dist": "run-batch",
+    "pkg-ok": "pkg-ok",
+    "precommit": "run-batch",
+    "prepush": "run-batch",
+    "postinstall": "node ./scripts/postinstall.js"
+  },
+  "run-batch": {
+    "build": [
+      "clean",
+      "pkg-ok",
+      "lint",
+      "compile:build",
+      "test"
+    ],
+    "build:watch": [
+      "compile:watch"
+    ],
+    "build:dist": [
+      "pkg-ok",
+      "lint",
+      "clean",
+      "compile:build",
+      "test:dist",
+      "clean:dist",
+      "compile:dist"
+    ],
+    "test:dist": [
+      "test-with-cover",
+      "remap-coverage:dist"
+    ],
+    "test": [
+      "test-with-cover",
+      "remap-coverage"
+    ],
+    "precommit": [
+      "postinstall",
+      "build",
+      "staged-mods-ok"
+    ],
+    "prepush": [
+      "build:dist",
+      "check",
+      "secure",
+      "no-mods"
+    ]
+  },
+  "devDependencies": {
+    "@types/chai": "^4.0.2",
+    "@types/circular-json": "^0.1.30",
+    "@types/mocha": "^2.2.40",
+    "@types/node": "^8.0.19",
+    "@types/semver": "^5.3.31",
+    "bottleneck": "~1.16.0",
+    "chai": "~4.1.1",
+    "chai-as-promised": "~7.1.1",
+    "chalk": "^2.0.1",
+    "commander": "^2.9.0",
+    "coveralls": "^2.12.0",
+    "cross-env": "~5.0.4",
+    "git-mods": "~1.0.7",
+    "graceful-fs": "^4.1.11",
+    "husky": "^0.14.3",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.5.0",
+    "node-emoji": "^1.5.1",
+    "npm-check-updates": "^2.10.3",
+    "npm-run-batch": "0.0.6",
+    "npm-sh": "^1.0.1",
+    "nsp": "^2.6.3",
+    "nsp-formatter-checkstyle": "^1.0.1",
+    "nsp-formatter-remarkup": "^1.0.2",
+    "parse-git-config": "^1.1.1",
+    "pkg-ok": "^1.0.1",
+    "remap-istanbul": "^0.9.1",
+    "rimraf": "^2.6.1",
+    "shelljs-nodecli": "^0.1.1",
+    "sinon": "~3.0.0",
+    "ts-node": "~3.3.0",
+    "tslint": "^5.5.0",
+    "typescript": "^2.4.2"
+  },
+  "dependencies": {
+    "bluebird": "~3.5.0",
+    "request-promise": "~4.2.1",
+    "runtime-engine-check": "^1.0.0",
+    "semver": "^5.3.0"
+  },
+  "standard": {
+    "env": [
+      "mocha"
+    ]
+  }
+}

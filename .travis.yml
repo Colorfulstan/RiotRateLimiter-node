@@ -1,0 +1,9 @@
+language: node_js
+node_js:
+  - '6'
+  - '7'
+script:
+  - npm run prepush
+    # get the coverage metrics to coveralls
+  - remap-istanbul -i coverage/typescript/coverage.json -o coverage/typescript/lcov.info -t lcovonly
+  - cat coverage/typescript/lcov.info | ./node_modules/coveralls/bin/coveralls.js
