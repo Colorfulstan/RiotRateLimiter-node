@@ -31,6 +31,9 @@ export const RATELIMIT_TYPE_STRINGS         = {
 }
 export const RATELIMIT_INIT_SECONDS: number = 7200;
 
+export const FACTOR_REQUEST_MARGIN_BELOW_5_SEC: number = 0.75
+export const FACTOR_REQUEST_MARGIN_ABOVE_5_SEC: number = 0.9
+
 export interface Comparable {
   equals(c): boolean
 
@@ -73,8 +76,8 @@ export default class RateLimit implements Comparable, RateLimitOptions {
     this._debug             = debug
     this.timestampLastReset = Date.now()
 
-    this.requestsSafeBurst = (this.seconds <= 5) ? Math.floor(this.requests * 0.75) : Math.floor(this.requests * 0.9)
-    this.limiters = []
+    this.requestsSafeBurst = (this.seconds <= 5) ? Math.floor(this.requests * FACTOR_REQUEST_MARGIN_BELOW_5_SEC) : Math.floor(this.requests * FACTOR_REQUEST_MARGIN_ABOVE_5_SEC)
+    this.limiters          = []
   }
 
   static getRateLimitTypeString(type: RATELIMIT_TYPE) {
@@ -114,9 +117,17 @@ export default class RateLimit implements Comparable, RateLimitOptions {
     return ((this.seconds * 1000) - (Date.now() - this.timestampLastReset)) / 1000
   }
 
+  getMaximumRequests(strategy: STRATEGY) {
+    if (this.isUsingSafetyMargin(strategy)) {
+      return this.requestsSafeBurst
+    } else {
+      return this.requests
+    }
+  }
+
   getRemainingRequests(strategy: STRATEGY) {
     let available
-    if (strategy === STRATEGY.BURST && this.type !== RATELIMIT_TYPE.SYNC && this.type !== RATELIMIT_TYPE.BACKOFF) {
+    if (this.isUsingSafetyMargin(strategy)) {
       // using only 95% of the limit as safety measure on burst
       available = this.requestsSafeBurst
     } else {
@@ -125,6 +136,10 @@ export default class RateLimit implements Comparable, RateLimitOptions {
 
     let remaining = available - this._count
     return remaining > 0 ? remaining : 0
+  }
+
+  isUsingSafetyMargin(strategy: STRATEGY) {
+    return strategy === STRATEGY.BURST && this.type !== RATELIMIT_TYPE.SYNC && this.type !== RATELIMIT_TYPE.BACKOFF
   }
 
   getSpreadInterval() {

@@ -13,7 +13,7 @@ import * as path from 'path';
 describe('RiotApiLimiter', () => {
   let limiter: RiotRateLimiter;
   beforeEach(function () {
-    limiter = new RiotRateLimiter({limits: [[20, 1], [100, 120]], useBurst: true, debug: true})
+    limiter = new RiotRateLimiter({limits: [[20, 1], [100, 120]], strategy: STRATEGY.BURST, debug: true})
   });
   it('can be created', () => {
     expect(limiter).to.be.instanceOf(RiotRateLimiter)

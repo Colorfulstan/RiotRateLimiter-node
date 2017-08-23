@@ -6,7 +6,8 @@ import {should} from 'chai';
 
 should()
 
-import RateLimit, {RATELIMIT_TYPE} from './index';
+import RateLimit, {FACTOR_REQUEST_MARGIN_ABOVE_5_SEC, FACTOR_REQUEST_MARGIN_BELOW_5_SEC, RATELIMIT_TYPE} from './index';
+import {STRATEGY} from '../RateLimiter/index';
 
 describe('RateLimit', function () {
   let clock: any
@@ -24,10 +25,35 @@ describe('RateLimit', function () {
     limit.should.have.property('timestampLastReset').equals(Date.now())
   });
 
+  describe('Safety margins', function () {
+    let limit: RateLimit
+    const requestsSet = 100
+    describe('if the ratelimit has a timer of below 5 seconds', function () {
+      beforeEach(function () {
+        limit = new RateLimit({requests: requestsSet, seconds: 1}, {debug: true})
+      });
+      it('reduces the maximum requests acchordingly', function () {
+        const expected = requestsSet * FACTOR_REQUEST_MARGIN_BELOW_5_SEC
+        limit.reset()
+        limit.getRemainingRequests(STRATEGY.BURST).should.equal(expected)
+      });
+    });
+    describe('if the ratelimit has a timer above 5 seconds', function () {
+      beforeEach(function () {
+        limit = new RateLimit({requests: requestsSet, seconds: 10}, {debug: true})
+      });
+      it('reduces the maximum requests acchordingly', function () {
+        const expected = requestsSet * FACTOR_REQUEST_MARGIN_ABOVE_5_SEC
+        limit.reset()
+        limit.getRemainingRequests(STRATEGY.BURST).should.equal(expected)
+      });
+    });
+  });
+
   describe('100:1', function () {
     let limit: RateLimit
     beforeEach(function () {
-      limit = new RateLimit({requests: 100, seconds: 1})
+      limit = new RateLimit({requests: 100, seconds: 1}, {debug: true})
     });
 
     it('resets its own timer', function () {
@@ -51,15 +77,15 @@ describe('RateLimit', function () {
     });
 
     it('provides info on if requests are available', function () {
-      limit.increment(90)
-      limit.check().should.be.true
-      limit.increment(10)
-      limit.check().should.be.false
+      limit.increment(50)
+      limit.check(STRATEGY.BURST).should.be.true
+      limit.increment(50)
+      limit.check(STRATEGY.BURST).should.be.false
     });
 
     it('provides the remaining requests available', function () {
-      limit.increment(90)
-      limit.getRemainingRequests().should.equal(10)
+      limit.increment(50)
+      limit.getRemainingRequests(STRATEGY.BURST).should.equal(25)
     });
 
     describe('spreadInterval', function () {
@@ -83,6 +109,7 @@ describe('RateLimit', function () {
       });
     });
   });
+
   describe('50/10:3600', function () {
     let limit
     beforeEach(function () {
