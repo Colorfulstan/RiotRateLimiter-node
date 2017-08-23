@@ -91,7 +91,8 @@ describe('RiotApiLimiter', () => {
     });
   });
 
-  describe('executingRequest', function () {
+  // NOTE: these tests are meant for manual confirmation and testing since they need an actual API key
+  describe.skip('executingRequest', function () {
     describe('endpoint without app-limiting but method-limited', function () {
       const staticDataUrl = 'https://la1.api.riotgames.com/lol/static-data/v3/maps'
       const matchListUrl  = 'https://euw1.api.riotgames.com/lol/match/v3/matchlists/by-account/21777671'
