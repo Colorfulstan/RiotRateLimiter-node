@@ -1,19 +1,20 @@
-# RiotRateLimiter
+# RiotRateLimiter-node
 
-A rate limiter hadnling rate-limits enforced by the riot-games api. Automatically creates and updates
+A rate limiter handling rate-limits enforced by the riot-games api. Automatically creates and updates
 rate-limiters on a per region and method base,
 respecting app-limits, method limits and generic backoff on service/underlying service limits.
 
 ## Getting Started
 
-```npm install riotratelimiter```
+```npm install riot-ratelimiter```
 ```
-  const RiotRateLimiter = require('riotratelimiter')
+  const RiotRateLimiter = require('riot-ratelimiter')
   const limiter = new RiotRateLimiter()
 
   limiter.executing({
     url: 'validRiotApiUrl',
     token: <RIOT_API_KEY>,
+
     // will resolve the Promise with the full API response Object
     // omit or set to false if you are only interested in the data.
     // in case of an error (404/500/503) the Promise will always be rejected with the full response.

@@ -9,7 +9,7 @@
     "ratelimiter"
   ],
   "author": "Jonas Krispin",
-  "repository": "colorfulstan/RiotRateLimiter-node",
+  "repository": "Colorfulstan/RiotRateLimiter-node.git",
   "license": "MIT",
   "private": false,
   "engines": {
