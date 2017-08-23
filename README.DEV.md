@@ -2,6 +2,19 @@
 
 use ```npm run sh``` before using the npm scripts!
 
+## Dev quickstart
+
+This documentation and the build tasks would need to be improved,
+as the starter repo seems not to be completely up to date and not all changes to it seem to be taken through all tasks.
+
+I am currently using the capabilities of WebStorm to run tests and execute npm tasks,
+so this section might take a while to be updated for recommended CLI usage (sorry)
+
+Most important:
+
+For release
+```npm run build:dist```
+
 Build upon:
 
 # typescript-starter-node
