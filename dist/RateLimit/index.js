@@ -88,6 +88,9 @@ class RateLimit {
         return strategy === index_1.STRATEGY.BURST && this.type !== RATELIMIT_TYPE.SYNC && this.type !== RATELIMIT_TYPE.BACKOFF;
     }
     getSpreadInterval() {
+        if (this.type === RATELIMIT_TYPE.SYNC) {
+            return 500;
+        }
         const remainingExecutionsInIntervall = this._requests - this._count;
         return RateLimit.calcMSUntilReset(this._seconds, this.timestampLastReset) / ((remainingExecutionsInIntervall > 0) ? remainingExecutionsInIntervall : 1);
     }
