@@ -1,1 +1,2 @@
-export { RiotRateLimiter } from './RiotRateLimiter';
+import { RiotRateLimiter } from './RiotRateLimiter/index';
+export = RiotRateLimiter;
