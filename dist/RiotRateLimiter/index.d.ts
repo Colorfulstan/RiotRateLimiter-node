@@ -1,6 +1,5 @@
 import { STRATEGY } from '../RateLimiter';
 export declare type RiotRateLimiterConstructorOptions = {
-    limits: Array<number[]>;
     strategy?: STRATEGY;
     debug?: boolean;
 };
@@ -16,7 +15,7 @@ export declare class RiotRateLimiter {
     private strategy;
     private debug;
     private appLimits;
-    constructor({strategy, debug}: RiotRateLimiterConstructorOptions);
+    constructor({strategy, debug}?: RiotRateLimiterConstructorOptions);
     executing({url, token, resolveWithFullResponse}: {
         url: any;
         token: any;

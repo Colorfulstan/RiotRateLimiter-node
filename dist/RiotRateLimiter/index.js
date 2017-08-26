@@ -6,7 +6,7 @@ const Bluebird = require('bluebird');
 const RiotRateLimiterParameterError_1 = require("../errors/RiotRateLimiterParameterError");
 const index_1 = require("../RateLimit/index");
 class RiotRateLimiter {
-    constructor({ strategy = RateLimiter_1.STRATEGY.SPREAD, debug = false }) {
+    constructor({ strategy = RateLimiter_1.STRATEGY.SPREAD, debug = false } = {}) {
         this.strategy = strategy;
         this.debug = debug;
         this.limitersPerPlatformId = {};

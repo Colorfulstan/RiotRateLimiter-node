@@ -3,7 +3,7 @@ import {RateLimiter, STRATEGY} from '../RateLimiter'
 const requestP = require('request-promise');
 const Bluebird = require('bluebird');
 
-export type RiotRateLimiterConstructorOptions = { limits: Array<number[]>, strategy?: STRATEGY, debug?: boolean }
+export type RiotRateLimiterConstructorOptions = { strategy?: STRATEGY, debug?: boolean }
 export type RiotRateLimiterOptions = { limits: RateLimitOptions[], strategy: STRATEGY, platformId: string, apiMethod: string }
 
 
@@ -32,7 +32,7 @@ export class RiotRateLimiter {
   private appLimits: RateLimit[];
 
   // TODO: do we even need the input limits? // propably only as fallback in case there are headers missing
-  constructor({strategy = STRATEGY.SPREAD, debug = false}: RiotRateLimiterConstructorOptions) {
+  constructor({strategy = STRATEGY.SPREAD, debug = false}: RiotRateLimiterConstructorOptions = {}) {
     this.strategy = strategy
     this.debug    = debug
 
