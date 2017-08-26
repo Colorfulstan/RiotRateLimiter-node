@@ -48,7 +48,7 @@ export class RateLimiter {
       throw new RiotRateLimiterParameterError('At least one RateLimit has to be provided!')
     }
     this.limits = limits
-    this.setStrategy(strategy)
+    this.strategy = strategy
     this.debug = debug
 
     limits.forEach(limit => limit.addLimiter(this))
@@ -316,7 +316,7 @@ export class RateLimiter {
         console.log('scheduling request, limit not exceeded: ' + this.checkBurstRateLimit() + ' rescheduled:' +
           ' ' + isReschedule)
       }
-      if (!this._isPaused && this.checkBurstRateLimit()) {
+      if (!this.isPaused && this.checkBurstRateLimit()) {
         if (this.debug) console.log('executing function')
         this.execute(fn, resolve, reject)
       } else {
@@ -327,7 +327,7 @@ export class RateLimiter {
 
   private schedulingWithSpread(fn: (limiter: RateLimiter) => any, isReschedule = false) {
     return new Promise((resolve, reject) => {
-      if (!this._isPaused && this.checkSpreadRateLimit()) {
+      if (!this.isPaused && this.checkSpreadRateLimit()) {
         this.refresh()
         this.execute(fn, resolve, reject)
       } else {
