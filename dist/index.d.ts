@@ -1,1 +1,1 @@
-export { default } from './RiotRateLimiter';
+export { RiotRateLimiter } from './RiotRateLimiter';

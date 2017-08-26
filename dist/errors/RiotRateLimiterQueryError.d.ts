@@ -1,3 +1,3 @@
-export default class RiotRateLimiterQueryError extends Error {
+export declare class RiotRateLimiterQueryError extends Error {
     constructor(error: any);
 }

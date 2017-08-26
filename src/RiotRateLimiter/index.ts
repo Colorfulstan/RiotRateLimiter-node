@@ -1,4 +1,4 @@
-import RateLimiter, {STRATEGY} from '../RateLimiter'
+import {RateLimiter, STRATEGY} from '../RateLimiter'
 
 const requestP = require('request-promise');
 const Bluebird = require('bluebird');
@@ -7,10 +7,10 @@ export type RiotRateLimiterConstructorOptions = { limits: Array<number[]>, strat
 export type RiotRateLimiterOptions = { limits: RateLimitOptions[], strategy: STRATEGY, platformId: string, apiMethod: string }
 
 
-import RiotRateLimiterParameterError from '../errors/RiotRateLimiterParameterError';
-import RateLimit, {RATELIMIT_INIT_SECONDS, RATELIMIT_TYPE, RateLimitOptions} from '../RateLimit/index';
+import {RiotRateLimiterParameterError} from '../errors/RiotRateLimiterParameterError';
+import {RateLimit, RATELIMIT_INIT_SECONDS, RATELIMIT_TYPE, RateLimitOptions} from '../RateLimit/index';
 
-export default class RiotRateLimiter {
+export class RiotRateLimiter {
 
   /**
    * Each apiMethod on each platformId has multiple rate-limiters representing the rate-limits told from the
@@ -33,8 +33,8 @@ export default class RiotRateLimiter {
 
   // TODO: do we even need the input limits? // propably only as fallback in case there are headers missing
   constructor({strategy = STRATEGY.SPREAD, debug = false}: RiotRateLimiterConstructorOptions) {
-    this.strategy               = strategy
-    this.debug                  = debug
+    this.strategy = strategy
+    this.debug    = debug
 
     this.limitersPerPlatformId = {}
   }
@@ -271,7 +271,7 @@ export default class RiotRateLimiter {
       // else update the limits acchordingly
 
       // removing deprecated limits
-      this.appLimits             = this.appLimits.filter(limit => {
+      this.appLimits = this.appLimits.filter(limit => {
         const optionsForLimit = updateOptionsCopy.find((options, index) => {
           if (limit.seconds === options.seconds) {
             // removing the option since it is not needed anymore

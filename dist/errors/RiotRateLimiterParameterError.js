@@ -5,4 +5,4 @@ class RiotRateLimiterParameterError extends Error {
         super(error);
     }
 }
-exports.default = RiotRateLimiterParameterError;
+exports.RiotRateLimiterParameterError = RiotRateLimiterParameterError;

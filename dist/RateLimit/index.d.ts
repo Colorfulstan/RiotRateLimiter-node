@@ -1,4 +1,4 @@
-import RateLimiter, { STRATEGY } from '../RateLimiter/index';
+import { RateLimiter, STRATEGY } from '../RateLimiter/index';
 export interface RateLimitOptions {
     requests: number;
     seconds: number;
@@ -29,7 +29,7 @@ export interface Comparable {
     equals(c: any): boolean;
     compareTo(c1: any, c2: any): number;
 }
-export default class RateLimit implements Comparable, RateLimitOptions {
+export declare class RateLimit implements Comparable, RateLimitOptions {
     private _requests;
     private requestsSafeBurst;
     readonly requests: number;

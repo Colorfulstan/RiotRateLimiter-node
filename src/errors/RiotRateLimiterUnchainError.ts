@@ -1,4 +1,4 @@
-export default class RiotRateLimiterUnchainError extends Error {
+export class RiotRateLimiterUnchainError extends Error {
   constructor(error) {
     super(error);
   }

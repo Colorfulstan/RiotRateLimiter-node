@@ -1,8 +1,9 @@
-import RateLimit, {
+import {
+  RateLimit,
   RATELIMIT_INIT_SECONDS, RATELIMIT_TYPE, RATELIMIT_TYPE_STRINGS,
   RateLimitOptions
 } from '../RateLimit';
-import RiotRateLimiterParameterError from '../errors/RiotRateLimiterParameterError';
+import {RiotRateLimiterParameterError} from '../errors/RiotRateLimiterParameterError';
 
 export type RateLimiterOptions = {
   limits: RateLimit[], strategy?: STRATEGY, debug?: boolean
@@ -15,7 +16,7 @@ export enum STRATEGY {
 
 export const RATELIMIT_BACKOFF_DURATION_MS_DEFAULT = 1000
 
-export default class RateLimiter {
+export class RateLimiter {
   private debug: boolean;
   public static STRATEGY = STRATEGY
 

@@ -183,4 +183,4 @@ class RateLimit {
         this.startResetTimer();
     }
 }
-exports.default = RateLimit;
+exports.RateLimit = RateLimit;

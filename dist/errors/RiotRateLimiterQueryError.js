@@ -5,4 +5,4 @@ class RiotRateLimiterQueryError extends Error {
         super(error);
     }
 }
-exports.default = RiotRateLimiterQueryError;
+exports.RiotRateLimiterQueryError = RiotRateLimiterQueryError;

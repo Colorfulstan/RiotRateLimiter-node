@@ -3,11 +3,10 @@
 
 import * as sinon from 'sinon'
 import {should} from 'chai';
+import {RateLimit, FACTOR_REQUEST_MARGIN_ABOVE_5_SEC, FACTOR_REQUEST_MARGIN_BELOW_5_SEC, RATELIMIT_TYPE} from './index';
+import {STRATEGY} from '../RateLimiter/index';
 
 should()
-
-import RateLimit, {FACTOR_REQUEST_MARGIN_ABOVE_5_SEC, FACTOR_REQUEST_MARGIN_BELOW_5_SEC, RATELIMIT_TYPE} from './index';
-import {STRATEGY} from '../RateLimiter/index';
 
 describe('RateLimit', function () {
   let clock: any

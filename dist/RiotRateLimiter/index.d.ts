@@ -11,7 +11,7 @@ export declare type RiotRateLimiterOptions = {
     apiMethod: string;
 };
 import { RATELIMIT_TYPE, RateLimitOptions } from '../RateLimit/index';
-export default class RiotRateLimiter {
+export declare class RiotRateLimiter {
     private limitersPerPlatformId;
     private strategy;
     private debug;

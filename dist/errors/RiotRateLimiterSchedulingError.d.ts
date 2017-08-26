@@ -1,3 +1,3 @@
-export default class RiotRateLimiterSchedulingError extends Error {
+export declare class RiotRateLimiterSchedulingError extends Error {
     constructor(error: any);
 }

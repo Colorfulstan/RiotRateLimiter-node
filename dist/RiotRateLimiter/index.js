@@ -18,8 +18,8 @@ class RiotRateLimiter {
         }
         if (!this.limitersPerPlatformId[platformId][apiMethod]) {
             console.log('creating sync rate limimter for ', platformId, apiMethod);
-            this.limitersPerPlatformId[platformId][apiMethod] = new RateLimiter_1.default({
-                limits: [RateLimiter_1.default.createSyncRateLimit(this.debug)],
+            this.limitersPerPlatformId[platformId][apiMethod] = new RateLimiter_1.RateLimiter({
+                limits: [RateLimiter_1.RateLimiter.createSyncRateLimit(this.debug)],
                 strategy: this.strategy,
                 debug: this.debug
             });
@@ -39,10 +39,10 @@ class RiotRateLimiter {
     executingScheduledCallback(rateLimiter, { url, token, resolveWithFullResponse = false }) {
         return Bluebird.resolve().then(() => {
             if (!url) {
-                throw new RiotRateLimiterParameterError_1.default('URL has to be provided for the ApiRequest');
+                throw new RiotRateLimiterParameterError_1.RiotRateLimiterParameterError('URL has to be provided for the ApiRequest');
             }
             if (!token) {
-                throw new RiotRateLimiterParameterError_1.default('options.token has to be provided for the ApiRequest');
+                throw new RiotRateLimiterParameterError_1.RiotRateLimiterParameterError('options.token has to be provided for the ApiRequest');
             }
             let options = {
                 url: url,
@@ -185,7 +185,7 @@ class RiotRateLimiter {
         }
         let updateOptionsCopy = updateOptions.slice();
         if (!this.appLimits || this.appLimits.length === 0) {
-            this.appLimits = updateOptionsCopy.map(options => new index_1.default(options, { debug: this.debug }));
+            this.appLimits = updateOptionsCopy.map(options => new index_1.RateLimit(options, { debug: this.debug }));
         }
         else {
             this.appLimits = this.appLimits.filter(limit => {
@@ -206,9 +206,9 @@ class RiotRateLimiter {
                 }
             });
             if (updateOptionsCopy.length > 0) {
-                this.appLimits = this.appLimits.concat(updateOptionsCopy.map(options => new index_1.default(options, { debug: this.debug })));
+                this.appLimits = this.appLimits.concat(updateOptionsCopy.map(options => new index_1.RateLimit(options, { debug: this.debug })));
             }
         }
     }
 }
-exports.default = RiotRateLimiter;
+exports.RiotRateLimiter = RiotRateLimiter;

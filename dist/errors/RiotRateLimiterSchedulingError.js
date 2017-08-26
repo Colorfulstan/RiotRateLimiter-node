@@ -5,4 +5,4 @@ class RiotRateLimiterSchedulingError extends Error {
         super(error);
     }
 }
-exports.default = RiotRateLimiterSchedulingError;
+exports.RiotRateLimiterSchedulingError = RiotRateLimiterSchedulingError;

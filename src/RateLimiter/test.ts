@@ -10,9 +10,9 @@ use(chaiAsPromised)
 
 import * as sinon from 'sinon'
 
-import RateLimit from '../RateLimit/index';
-import RateLimiter, {STRATEGY} from './index';
-import RiotRateLimiterParameterError from '../errors/RiotRateLimiterParameterError';
+import {RateLimit} from '../RateLimit/index';
+import {RateLimiter, STRATEGY} from './index';
+import {RiotRateLimiterParameterError} from '../errors/RiotRateLimiterParameterError';
 
 function scheduleNExecutions(limiter, numExecutions) {
   for (let i = 0; i < numExecutions; i++) {

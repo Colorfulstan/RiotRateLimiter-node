@@ -1,4 +1,4 @@
-import RateLimit, { RateLimitOptions } from '../RateLimit';
+import { RateLimit, RateLimitOptions } from '../RateLimit';
 export declare type RateLimiterOptions = {
     limits: RateLimit[];
     strategy?: STRATEGY;
@@ -9,7 +9,7 @@ export declare enum STRATEGY {
     SPREAD = 1,
 }
 export declare const RATELIMIT_BACKOFF_DURATION_MS_DEFAULT = 1000;
-export default class RateLimiter {
+export declare class RateLimiter {
     private debug;
     static STRATEGY: typeof STRATEGY;
     private backoffDurationMS;

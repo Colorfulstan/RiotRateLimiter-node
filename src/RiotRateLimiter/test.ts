@@ -5,8 +5,8 @@ import {expect, should} from 'chai';
 
 should()
 
-import RiotRateLimiter from './';
-import RateLimiter, {STRATEGY} from '../RateLimiter/index';
+import {RiotRateLimiter} from './';
+import {RateLimiter, STRATEGY} from '../RateLimiter/index';
 import * as fs from 'fs';
 import * as path from 'path';
 

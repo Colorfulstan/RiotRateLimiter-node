@@ -15,7 +15,7 @@ class RateLimiter {
         this.intervalNextSpreadExecution = null;
         this.queue = [];
         if (!limits || !Array.isArray(limits) || limits.length === 0) {
-            throw new RiotRateLimiterParameterError_1.default('At least one RateLimit has to be provided!');
+            throw new RiotRateLimiterParameterError_1.RiotRateLimiterParameterError('At least one RateLimit has to be provided!');
         }
         this.limits = limits;
         this.setStrategy(strategy);
@@ -67,7 +67,7 @@ class RateLimiter {
         }
         limitsOptions.filter(options => this.indexOfLimit(options) === -1)
             .forEach(options => {
-            this.addLimit(new RateLimit_1.default(options, { debug: this.debug }));
+            this.addLimit(new RateLimit_1.RateLimit(options, { debug: this.debug }));
         });
         if (this.debug) {
             console.log('updated limits: ' + this.getLimitStrings());
@@ -335,14 +335,14 @@ class RateLimiter {
         return !!this.limits.find(limit => limit.type === RateLimit_1.RATELIMIT_TYPE.SYNC);
     }
     static createSyncRateLimit(debug = false) {
-        return new RateLimit_1.default({
+        return new RateLimit_1.RateLimit({
             requests: 1,
             seconds: RateLimit_1.RATELIMIT_INIT_SECONDS,
             type: RateLimit_1.RATELIMIT_TYPE.SYNC
         }, { debug });
     }
     static createBackoffRateLimit(seconds, debug) {
-        return new RateLimit_1.default({
+        return new RateLimit_1.RateLimit({
             requests: 0,
             seconds: seconds,
             type: RateLimit_1.RATELIMIT_TYPE.BACKOFF
@@ -350,4 +350,4 @@ class RateLimiter {
     }
 }
 RateLimiter.STRATEGY = STRATEGY;
-exports.default = RateLimiter;
+exports.RateLimiter = RateLimiter;

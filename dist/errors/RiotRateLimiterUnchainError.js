@@ -5,4 +5,4 @@ class RiotRateLimiterUnchainError extends Error {
         super(error);
     }
 }
-exports.default = RiotRateLimiterUnchainError;
+exports.RiotRateLimiterUnchainError = RiotRateLimiterUnchainError;
