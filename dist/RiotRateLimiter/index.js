@@ -49,6 +49,7 @@ class RiotRateLimiter {
                 method: 'GET',
                 headers: { 'X-Riot-Token': token },
                 resolveWithFullResponse,
+                transform2xxOnly: true,
                 transform: (body, response, resolveWithFullResponse) => {
                     let updatedLimits = [];
                     if (this.debug) {

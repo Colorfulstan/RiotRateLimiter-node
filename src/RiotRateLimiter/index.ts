@@ -77,11 +77,12 @@ export class RiotRateLimiter {
       if (!token) { throw new RiotRateLimiterParameterError('options.token has to be provided for the ApiRequest'); }
 
       let options = {
-        url      : url,
-        method   : 'GET',
-        headers  : {'X-Riot-Token': token},
+        url             : url,
+        method          : 'GET',
+        headers         : {'X-Riot-Token': token},
         resolveWithFullResponse,
-        transform: (body, response, resolveWithFullResponse) => {
+        transform2xxOnly: true,
+        transform       : (body, response, resolveWithFullResponse) => {
 
           let updatedLimits: RateLimitOptions[] = []
 
