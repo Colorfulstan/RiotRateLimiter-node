@@ -81,7 +81,6 @@ export class RiotRateLimiter {
         method          : 'GET',
         headers         : {'X-Riot-Token': token},
         resolveWithFullResponse,
-        transform2xxOnly: true,
         transform       : (body, response, resolveWithFullResponse) => {
 
           let updatedLimits: RateLimitOptions[] = []
@@ -89,6 +88,10 @@ export class RiotRateLimiter {
           if (this.debug) {
             console.log(response.statusCode)
             console.log(response.headers)
+          }
+
+          if (response.statusCode < 200 || response.statusCode >= 300) {
+            resolveWithFullResponse = true
           }
 
           // App limits
@@ -151,6 +154,7 @@ export class RiotRateLimiter {
             rateLimiter.backoff({retryAfterMS})
             return response
           }
+
           return resolveWithFullResponse ? response : body
         }
       };

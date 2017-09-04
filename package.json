@@ -86,6 +86,7 @@
     ]
   },
   "devDependencies": {
+    "@types/chai-as-promised": "0.0.31",
     "@types/chai": "^4.0.2",
     "@types/circular-json": "^0.1.30",
     "@types/mocha": "^2.2.40",

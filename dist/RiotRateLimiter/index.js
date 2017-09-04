@@ -49,12 +49,14 @@ class RiotRateLimiter {
                 method: 'GET',
                 headers: { 'X-Riot-Token': token },
                 resolveWithFullResponse,
-                transform2xxOnly: true,
                 transform: (body, response, resolveWithFullResponse) => {
                     let updatedLimits = [];
                     if (this.debug) {
                         console.log(response.statusCode);
                         console.log(response.headers);
+                    }
+                    if (response.statusCode < 200 || response.statusCode >= 300) {
+                        resolveWithFullResponse = true;
                     }
                     if (response.headers['x-app-rate-limit']) {
                         const appRateLimits = RiotRateLimiter.extractRateLimitFromHeader(index_1.RATELIMIT_TYPE.APP, response.headers['x-app-rate-limit']);

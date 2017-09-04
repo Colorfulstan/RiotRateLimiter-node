@@ -1,9 +1,11 @@
 /// <reference path="../../node_modules/@types/mocha/index.d.ts"/>
 import * as Promise from 'bluebird'
+import * as chaiAsPromised from 'chai-as-promised'
 
-import {expect, should} from 'chai';
+import {expect, should, use} from 'chai';
 
 should()
+use(chaiAsPromised)
 
 import {RiotRateLimiter} from './';
 import {RateLimiter, STRATEGY} from '../RateLimiter/index';
@@ -12,6 +14,7 @@ import * as path from 'path';
 
 describe('RiotApiLimiter', () => {
   let limiter: RiotRateLimiter;
+
   beforeEach(function () {
     limiter = new RiotRateLimiter({strategy: STRATEGY.BURST, debug: true})
   });
@@ -78,18 +81,51 @@ describe('RiotApiLimiter', () => {
       });
     });
   });
-  describe('updateLimiterChain():', function () { // TODO
-    let limiter: RateLimiter
-    describe('adding new limiters when no limiter exists for given new limits', function () {
 
+  describe('executingRequest', function () {
+    const mock_urlWith404 = 'http://ddragon.leagueoflegends.com';
+
+    describe('unsuccessful requests', function () {
+      it('rejects with the full response on non 2xx', function () {
+        return limiter.executing({url: mock_urlWith404, token: 'dummy'})
+                      .should.eventually.be.rejected
+                      .and.have.property('response')
+                      .with.property('headers');
+      });
+      it('rejects with an elaborate error object', function () {
+        return limiter.executing({url: mock_urlWith404, token: 'dummy'})
+                      .should.eventually.be.rejectedWith({
+            name      : 'StatusCodeError',
+            statusCode: 404
+          }).and.have.property('message');
+      });
+
+      it('rejects with the options set for the request', function () {
+        return limiter.executing({url: mock_urlWith404, token: 'dummy'})
+                      .should.eventually.be.rejected.and.have.property('options')
+                      .with.property('url')
+                      .equal(mock_urlWith404);
+      });
     });
-    describe('removing limiters when they are not within the new limits', function () {
+    describe('successful requests', function () {
+      const mock_urlWithJSONResponse = 'http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/champion/Aatrox.json'
+      const mock_urlWithNonJSONResponse = 'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aatrox_0.jpg';
 
-    });
-    describe('updating existing limiters acchording to their limitInterval', function () {
-
+      it('return fulfilled promises', function () {
+        return limiter.executing({url: mock_urlWithJSONResponse, token: 'dummy'})
+          .should.eventually.be.fulfilled;
+      });
+      it('will provide the body for responses by default', function () {
+        return limiter.executing({url: mock_urlWithJSONResponse, token: 'dummy'})
+                         .should.eventually.be.fulfilled.and.be.a('string');
+      });
+      it('will provide the full response with "resolveWithFullResponse" set to true', function () {
+        return limiter.executing({url: mock_urlWithJSONResponse, token: 'dummy', resolveWithFullResponse: true})
+                      .should.eventually.be.fulfilled.and.be.an('object').with.property('headers');
+      });
     });
   });
+
 
   // NOTE: these tests are meant for manual confirmation and testing since they need an actual API key
   describe.skip('executingRequest', function () {
@@ -103,9 +139,8 @@ describe('RiotApiLimiter', () => {
         const promises = []
         for (let i = 0; i < 15; i++) {
           promises.push(limiter.executing({
-              url  : staticDataUrl,
-              token: fs.readFileSync(path.resolve(__dirname, '../', 'API_KEY'), 'utf-8')
-                       .trim()
+              url: staticDataUrl,
+              token: fs.readFileSync(path.resolve(__dirname, '../', 'API_KEY'), 'utf-8').trim()
             }).then(data => console.log(data)).catch(err => console.log(err))
           )
         }
@@ -120,7 +155,7 @@ describe('RiotApiLimiter', () => {
         const numScheduled = 25
         for (let i = 0; i < numScheduled; i++) {
           promises.push(limiter.executing({
-            url  : matchListUrl,
+            url: matchListUrl,
             token: fs.readFileSync(path.resolve(__dirname, '../', 'API_KEY'), 'utf-8').trim()
           }).then(() => {
             executed++
@@ -145,7 +180,7 @@ describe('RiotApiLimiter', () => {
         const numScheduled = 150
         for (let i = 0; i < numScheduled; i++) {
           promises.push(limiter.executing({
-            url  : summonerUrl,
+            url: summonerUrl,
             token: fs.readFileSync(path.resolve(__dirname, '../', 'API_KEY'), 'utf-8').trim()
           }).then((data) => {
             executed++
