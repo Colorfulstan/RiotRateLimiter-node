@@ -130,6 +130,26 @@ describe('RiotApiLimiter', () => {
     describe('successful requests', function () {
       const mock_urlWithJSONResponse    = 'http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/champion/Aatrox.json'
       const mock_urlWithNonJSONResponse = 'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aatrox_0.jpg';
+      const host                        = 'https://euw1.api.riotgames.com'
+
+      describe('With invalid api-key', function () {
+        it('should be able to reject multiple requests', function () {
+          return limiter.executing({url: `${host}/lol/summoner/v3/summoners/by-name/Colorfulstan`, token: '123'})
+                        .then(() => {
+                          throw new Error('should be rejected')
+                        })
+                        .catch(err => {
+                          expect(err.statusCode).to.equal(403)
+                          return limiter.executing({
+                            url  : `${host}/lol/summoner/v3/summoners/by-name/Colorfulstan`,
+                            token: '123'
+                          })
+                        })
+                        .catch(err => {
+                          expect(err.statusCode).to.equal(403)
+                        })
+        });
+      });
 
       it('return fulfilled promises', function () {
         return limiter.executing({url: mock_urlWithJSONResponse, token: 'dummy'})
@@ -146,25 +166,8 @@ describe('RiotApiLimiter', () => {
     });
   });
 
-
   // NOTE: these tests are meant for manual confirmation and testing since they need an actual API key
   describe('executingRequest', function () {
-    const host = 'https://euw1.api.riotgames.com'
-
-    describe('With invalid api-key', function () {
-      it('should be able to reject multiple requests', function () {
-        return limiter.executing({url: `${host}/lol/summoner/v3/summoners/by-name/Colorfulstan`, token: '123'})
-                      .then(() => {
-                        throw new Error('should be rejected')
-                      })
-                      .catch(err => {
-                        return limiter.executing({
-                          url  : `${host}/lol/summoner/v3/summoners/by-name/Colorfulstan`,
-                          token: '123'
-                        }).should.eventually.be.rejectedWith(403)
-                      })
-      });
-    });
     describe.skip('endpoint without app-limiting but method-limited', function () {
       const staticDataUrl = 'https://la1.api.riotgames.com/lol/static-data/v3/maps'
       const matchListUrl  = 'https://euw1.api.riotgames.com/lol/match/v3/matchlists/by-account/21777671'

@@ -68,6 +68,11 @@ export class RateLimiter {
       const foundLimit = this.limits[limitIndex]
       foundLimit.updateSilently(limit)
       foundLimit.restartTimeout()
+
+      if (limit.type === RATELIMIT_TYPE.SYNC) {
+        this.clearTimeoutAndInterval()
+      }
+
       return foundLimit
     }
     return null
