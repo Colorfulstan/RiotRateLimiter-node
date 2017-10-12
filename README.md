@@ -27,7 +27,7 @@ respecting app-limits, method limits and generic backoff on service/underlying s
 You need to know how to work with Promises.
 This module uses promise-request for the actual requests.
 
-### Automatic limit synchronisation
+### Automatic limit synchronisation with RIOT Headers
 
 The region and method used will be determined from the given url.
 When a new ratelimiter is created (on the first request to a region and method)
@@ -66,6 +66,22 @@ RiotRateLimiter will keep track of the reset timer for the method, starting from
 Because there are no limit-window information given by riot this timer might wait longer then neccessary when the rate-limit will be approached (the full reset time),
 even if there are only a few requests left in the limit-count.
 All requests that would exceed the limit will be queeud up to be executed as soon as the the limit resets.
+
+## Treatment of Error Responses
+
+### 429 with retry-after Header (App- or Methodlimit exceeded)
+These requests will be rescheduled (first in queue) and the executing limiter
+will back off for the duration given by the retry-after Header.
+
+### 429 without retry-after Header (Underlying API System)
+These requests will be rescheduled (first in queue) and the executing limiter
+will backoff generically.
+
+This means it will start with a backoff timer on the first try (eg. 1000 MS)
+and increase the backoff time exponentially with each unsuccessful try (2000, 4000, 8000, ...).
+
+### Other errors
+Will be passed back to the caller by rejecting the promise returned from ```.executing```
 
 ## Running the tests
 
