@@ -144,13 +144,13 @@ describe('RateLimiter', function () {
     beforeEach(function () {
       limiter    = new RateLimiter({limits: [new RateLimit({seconds: 1, requests: 10}, {debug: true})]})
       limitToAdd = new RateLimit({requests: 20, seconds: 5}, {debug: true})
-      limiter.addLimit(limitToAdd)
+      limiter.addOrUpdateLimit(limitToAdd)
     });
     it('adds the limit to the limiters limits', function () {
       expect(limiter.getLimits().find(limit => limit.equals(limitToAdd))).to.exist
     });
     it('does not add the limiter to the RateLimit limiters if it is already in there', function () {
-      limiter.addLimit(limitToAdd)
+      limiter.addOrUpdateLimit(limitToAdd)
       expect(limitToAdd.limiters.length).to.equal(1)
     });
 
@@ -158,7 +158,7 @@ describe('RateLimiter', function () {
       expect(limitToAdd.limiters.length).to.equal(1)
     });
     it('does not add the limiter if it is already in there', function () {
-      limiter.addLimit(limitToAdd)
+      limiter.addOrUpdateLimit(limitToAdd)
       expect(limitToAdd.limiters.length).to.equal(1)
     });
   });

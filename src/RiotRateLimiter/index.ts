@@ -125,6 +125,8 @@ export class RiotRateLimiter {
               console.log(JSON.stringify(updatedLimits, null, 2))
             }
             rateLimiter.updateLimits(updatedLimits)
+          } else if (rateLimiter.isInitializing()) {
+            rateLimiter.addOrUpdateLimit(RateLimiter.createSyncRateLimit(this.debug))
           }
 
           if (response.statusCode === 429) {

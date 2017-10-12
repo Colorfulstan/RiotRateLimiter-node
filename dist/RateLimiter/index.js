@@ -22,7 +22,7 @@ class RateLimiter {
         this.debug = debug;
         limits.forEach(limit => limit.addLimiter(this));
     }
-    addLimit(limit) {
+    addOrUpdateLimit(limit) {
         if (this.debug && limit.type === RateLimit_1.RATELIMIT_TYPE.BACKOFF || limit.type === RateLimit_1.RATELIMIT_TYPE.SYNC) {
             console.log('adding ' + RateLimit_1.RATELIMIT_TYPE_STRINGS[limit.type] + ' limit', limit.toString());
         }
@@ -67,7 +67,7 @@ class RateLimiter {
         }
         limitsOptions.filter(options => this.indexOfLimit(options) === -1)
             .forEach(options => {
-            this.addLimit(new RateLimit_1.RateLimit(options, { debug: this.debug }));
+            this.addOrUpdateLimit(new RateLimit_1.RateLimit(options, { debug: this.debug }));
         });
         if (this.debug) {
             console.log('updated limits: ' + this.getLimitStrings());
@@ -91,7 +91,7 @@ class RateLimiter {
             console.warn(this.toString() + ' got notified from ' + limit.toString() + ' but is not attached to it!');
         }
         this.backoffUntilTimestamp = null;
-        this.addLimit(RateLimiter.createSyncRateLimit());
+        this.addOrUpdateLimit(RateLimiter.createSyncRateLimit());
     }
     notifyAboutLimitUpdate(limit) {
         if (this.debug && this.indexOfLimit(limit) === -1) {
@@ -102,7 +102,7 @@ class RateLimiter {
         }
     }
     notifyAboutExceededLimitReset() {
-        this.addLimit(RateLimiter.createSyncRateLimit());
+        this.addOrUpdateLimit(RateLimiter.createSyncRateLimit());
     }
     notifyAboutLimitReached(limit) {
         if (this.debug && this.indexOfLimit(limit) === -1) {
@@ -196,8 +196,8 @@ class RateLimiter {
         if (this.debug) {
             console.log('Backing off for ' + retryAfterMS / 1000 + 'seconds');
         }
-        this.addLimit(RateLimiter.createBackoffRateLimit((retryAfterMS / 1000), this.debug));
-        this.addLimit(RateLimiter.createSyncRateLimit(this.debug));
+        this.addOrUpdateLimit(RateLimiter.createBackoffRateLimit((retryAfterMS / 1000), this.debug));
+        this.addOrUpdateLimit(RateLimiter.createSyncRateLimit(this.debug));
     }
     schedulingWithBurst(fn, isReschedule = false) {
         return new Promise((resolve, reject) => {

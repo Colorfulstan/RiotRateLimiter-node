@@ -22,7 +22,7 @@ export declare class RateLimiter {
     private limits;
     private _isPaused;
     constructor({limits, strategy, debug}: RateLimiterOptions);
-    addLimit(limit: RateLimit): RateLimit;
+    addOrUpdateLimit(limit: RateLimit): RateLimit;
     removeLimit(limit: RateLimit): RateLimit;
     updateLimits(limitsOptions: RateLimitOptions[]): void;
     indexOfLimit(limit: RateLimit | RateLimitOptions): number;

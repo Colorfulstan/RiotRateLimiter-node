@@ -80,6 +80,9 @@ class RiotRateLimiter {
                         }
                         rateLimiter.updateLimits(updatedLimits);
                     }
+                    else if (rateLimiter.isInitializing()) {
+                        rateLimiter.addOrUpdateLimit(RateLimiter_1.RateLimiter.createSyncRateLimit(this.debug));
+                    }
                     if (response.statusCode === 429) {
                         let retryAfterMS;
                         if (response.headers['retry-after']) {

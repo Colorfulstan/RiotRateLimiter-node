@@ -54,7 +54,7 @@ export class RateLimiter {
     limits.forEach(limit => limit.addLimiter(this))
   }
 
-  addLimit(limit: RateLimit) {
+  addOrUpdateLimit(limit: RateLimit) {
     if (this.debug && limit.type === RATELIMIT_TYPE.BACKOFF || limit.type === RATELIMIT_TYPE.SYNC) {
       console.log('adding ' + RATELIMIT_TYPE_STRINGS[limit.type] + ' limit', limit.toString())
     }
@@ -109,7 +109,7 @@ export class RateLimiter {
     // add limits not yet in limiter
     limitsOptions.filter(options => this.indexOfLimit(options) === -1)
                  .forEach(options => {
-                   this.addLimit(new RateLimit(options, {debug: this.debug}))
+                   this.addOrUpdateLimit(new RateLimit(options, {debug: this.debug}))
                  })
 
     if (this.debug) {
@@ -136,7 +136,7 @@ export class RateLimiter {
       console.warn(this.toString() + ' got notified from ' + limit.toString() + ' but is not attached to it!')
     }
     this.backoffUntilTimestamp = null
-    this.addLimit(RateLimiter.createSyncRateLimit())
+    this.addOrUpdateLimit(RateLimiter.createSyncRateLimit())
   }
 
   notifyAboutLimitUpdate(limit: RateLimit) {
@@ -149,7 +149,7 @@ export class RateLimiter {
   }
 
   notifyAboutExceededLimitReset() {
-    this.addLimit(RateLimiter.createSyncRateLimit())
+    this.addOrUpdateLimit(RateLimiter.createSyncRateLimit())
   }
 
   notifyAboutLimitReached(limit: RateLimit) {
@@ -306,8 +306,8 @@ export class RateLimiter {
     if (this.debug) {
       console.log('Backing off for ' + retryAfterMS / 1000 + 'seconds')
     }
-    this.addLimit(RateLimiter.createBackoffRateLimit((retryAfterMS / 1000), this.debug))
-    this.addLimit(RateLimiter.createSyncRateLimit(this.debug))
+    this.addOrUpdateLimit(RateLimiter.createBackoffRateLimit((retryAfterMS / 1000), this.debug))
+    this.addOrUpdateLimit(RateLimiter.createSyncRateLimit(this.debug))
   }
 
   private schedulingWithBurst(fn: (limiter: RateLimiter) => any, isReschedule = false) {

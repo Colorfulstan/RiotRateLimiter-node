@@ -69,14 +69,16 @@ describe('RiotApiLimiter', () => {
         extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/2345226/by-champion/12')
           .should.have.property('platformId').equals('euw1')
         extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/2345226/by-champion/12')
-          .should.have.property('apiMethod').equals(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/by-champion/')
+          .should.have.property('apiMethod')
+          .equals(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/by-champion/')
       });
       describe('and query paramter', function () {
         it('works for champion-mastery endpoint', function () {
           extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/2345226/by-champion/12?api_key=')
             .should.have.property('platformId').equals('euw1')
           extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/2345226/by-champion/12?api_key=')
-            .should.have.property('apiMethod').equals(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/by-champion/')
+            .should.have.property('apiMethod')
+            .equals(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/by-champion/')
         });
       });
     });
@@ -85,14 +87,16 @@ describe('RiotApiLimiter', () => {
         extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/SummonerName/by-champion/Akali')
           .should.have.property('platformId').equals('euw1')
         extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/SummonerName/by-champion/Akali')
-          .should.have.property('apiMethod').equals(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/by-champion/')
+          .should.have.property('apiMethod')
+          .equals(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/by-champion/')
       });
       describe('and query paramter', function () {
         it('works for champion-mastery endpoint', function () {
           extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/SummonerName/by-champion/Akali?api_key=')
             .should.have.property('platformId').equals('euw1')
           extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/SummonerName/by-champion/Akali?api_key=')
-            .should.have.property('apiMethod').equals(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/by-champion/')
+            .should.have.property('apiMethod')
+            .equals(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/by-champion/')
         });
       });
     });
@@ -124,7 +128,7 @@ describe('RiotApiLimiter', () => {
       });
     });
     describe('successful requests', function () {
-      const mock_urlWithJSONResponse = 'http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/champion/Aatrox.json'
+      const mock_urlWithJSONResponse    = 'http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/champion/Aatrox.json'
       const mock_urlWithNonJSONResponse = 'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aatrox_0.jpg';
 
       it('return fulfilled promises', function () {
@@ -133,7 +137,7 @@ describe('RiotApiLimiter', () => {
       });
       it('will provide the body for responses by default', function () {
         return limiter.executing({url: mock_urlWithJSONResponse, token: 'dummy'})
-                         .should.eventually.be.fulfilled.and.be.a('string');
+                      .should.eventually.be.fulfilled.and.be.a('string');
       });
       it('will provide the full response with "resolveWithFullResponse" set to true', function () {
         return limiter.executing({url: mock_urlWithJSONResponse, token: 'dummy', resolveWithFullResponse: true})
@@ -144,8 +148,24 @@ describe('RiotApiLimiter', () => {
 
 
   // NOTE: these tests are meant for manual confirmation and testing since they need an actual API key
-  describe.skip('executingRequest', function () {
-    describe('endpoint without app-limiting but method-limited', function () {
+  describe('executingRequest', function () {
+    const host = 'https://euw1.api.riotgames.com'
+
+    describe('With invalid api-key', function () {
+      it('should be able to reject multiple requests', function () {
+        return limiter.executing({url: `${host}/lol/summoner/v3/summoners/by-name/Colorfulstan`, token: '123'})
+                      .then(() => {
+                        throw new Error('should be rejected')
+                      })
+                      .catch(err => {
+                        return limiter.executing({
+                          url  : `${host}/lol/summoner/v3/summoners/by-name/Colorfulstan`,
+                          token: '123'
+                        }).should.eventually.be.rejectedWith(403)
+                      })
+      });
+    });
+    describe.skip('endpoint without app-limiting but method-limited', function () {
       const staticDataUrl = 'https://la1.api.riotgames.com/lol/static-data/v3/maps'
       const matchListUrl  = 'https://euw1.api.riotgames.com/lol/match/v3/matchlists/by-account/21777671'
       const summonerUrl   = 'https://euw1.api.riotgames.com/lol/summoner/v3/summoners/87037613'
@@ -155,7 +175,7 @@ describe('RiotApiLimiter', () => {
         const promises = []
         for (let i = 0; i < 15; i++) {
           promises.push(limiter.executing({
-              url: staticDataUrl,
+              url  : staticDataUrl,
               token: fs.readFileSync(path.resolve(__dirname, '../', 'API_KEY'), 'utf-8').trim()
             }).then(data => console.log(data)).catch(err => console.log(err))
           )
@@ -171,7 +191,7 @@ describe('RiotApiLimiter', () => {
         const numScheduled = 25
         for (let i = 0; i < numScheduled; i++) {
           promises.push(limiter.executing({
-            url: matchListUrl,
+            url  : matchListUrl,
             token: fs.readFileSync(path.resolve(__dirname, '../', 'API_KEY'), 'utf-8').trim()
           }).then(() => {
             executed++
@@ -196,7 +216,7 @@ describe('RiotApiLimiter', () => {
         const numScheduled = 150
         for (let i = 0; i < numScheduled; i++) {
           promises.push(limiter.executing({
-            url: summonerUrl,
+            url  : summonerUrl,
             token: fs.readFileSync(path.resolve(__dirname, '../', 'API_KEY'), 'utf-8').trim()
           }).then((data) => {
             executed++
