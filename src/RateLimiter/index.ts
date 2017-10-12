@@ -22,7 +22,6 @@ export class RateLimiter {
 
   /** backoff duration used on 429 from underlying system */
   private backoffDurationMS: number = RATELIMIT_BACKOFF_DURATION_MS_DEFAULT
-  private backoffTimeout: number
   private backoffUntilTimestamp: number
 
   private intervalProcessQueue: NodeJS.Timer        = null;
@@ -47,9 +46,9 @@ export class RateLimiter {
     if (!limits || !Array.isArray(limits) || limits.length === 0) {
       throw new RiotRateLimiterParameterError('At least one RateLimit has to be provided!')
     }
-    this.limits = limits
+    this.limits   = limits
     this.strategy = strategy
-    this.debug = debug
+    this.debug    = debug
 
     limits.forEach(limit => limit.addLimiter(this))
   }
@@ -308,6 +307,11 @@ export class RateLimiter {
     }
     this.addOrUpdateLimit(RateLimiter.createBackoffRateLimit((retryAfterMS / 1000), this.debug))
     this.addOrUpdateLimit(RateLimiter.createSyncRateLimit(this.debug))
+  }
+
+  public resetBackoff() {
+    this.backoffDurationMS     = RATELIMIT_BACKOFF_DURATION_MS_DEFAULT
+    this.backoffUntilTimestamp = null
   }
 
   private schedulingWithBurst(fn: (limiter: RateLimiter) => any, isReschedule = false) {

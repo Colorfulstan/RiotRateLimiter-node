@@ -199,6 +199,10 @@ class RateLimiter {
         this.addOrUpdateLimit(RateLimiter.createBackoffRateLimit((retryAfterMS / 1000), this.debug));
         this.addOrUpdateLimit(RateLimiter.createSyncRateLimit(this.debug));
     }
+    resetBackoff() {
+        this.backoffDurationMS = exports.RATELIMIT_BACKOFF_DURATION_MS_DEFAULT;
+        this.backoffUntilTimestamp = null;
+    }
     schedulingWithBurst(fn, isReschedule = false) {
         return new Promise((resolve, reject) => {
             if (this.debug) {

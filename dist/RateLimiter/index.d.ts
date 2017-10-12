@@ -13,7 +13,6 @@ export declare class RateLimiter {
     private debug;
     static STRATEGY: typeof STRATEGY;
     private backoffDurationMS;
-    private backoffTimeout;
     private backoffUntilTimestamp;
     private intervalProcessQueue;
     private intervalNextSpreadExecution;
@@ -49,6 +48,7 @@ export declare class RateLimiter {
     backoff({retryAfterMS}?: {
         retryAfterMS?: any;
     }): void;
+    resetBackoff(): void;
     private schedulingWithBurst(fn, isReschedule?);
     private schedulingWithSpread(fn, isReschedule?);
     addToQueue(fn: (limiter: RateLimiter) => any, resolve: (value?: (PromiseLike<any> | any)) => void, reject: (reason?: any) => void, isReschedule?: boolean): {

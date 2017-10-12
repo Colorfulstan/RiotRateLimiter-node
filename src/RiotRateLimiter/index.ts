@@ -157,6 +157,7 @@ export class RiotRateLimiter {
             return response
           }
 
+          rateLimiter.resetBackoff() // request succesful, make sure backoff is reset
           return resolveWithFullResponse ? response : body
         }
       };

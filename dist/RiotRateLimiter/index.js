@@ -101,6 +101,7 @@ class RiotRateLimiter {
                         rateLimiter.backoff({ retryAfterMS });
                         return response;
                     }
+                    rateLimiter.resetBackoff();
                     return resolveWithFullResponse ? response : body;
                 }
             };
