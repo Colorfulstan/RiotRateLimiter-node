@@ -123,18 +123,24 @@ class RiotRateLimiter {
     }
     static extractPlatformIdAndMethodFromUrl(url) {
         let platformId;
-        let apiMethod;
-        try {
-            platformId = url.match(/\/\/(.*?)\./)[1];
-            apiMethod = url
-                .replace(/\?.*/g, '')
-                .replace(/\/\d+/g, '/');
+        let apiMethod = url;
+        platformId = url.match(/\/\/(.*?)\./)[1];
+        let regex = /by-.*?\/(.*?)\/|by-.*?\/(.*?$)/g;
+        let regexResult = regex.exec(url);
+        const regexResultsArr = [];
+        while (regexResult !== null) {
+            regexResultsArr.push(regexResult);
+            regexResult = regex.exec(url);
         }
-        catch (e) {
-            throw new Error('Could not extract PlatformId and Methot from url: ' + url);
-        }
+        regexResultsArr.reverse().forEach(result => {
+            const slashIndex = apiMethod.indexOf('/', result.index);
+            apiMethod = apiMethod.substring(0, slashIndex + 1) + apiMethod.substring(result.index + result[0].length);
+        });
+        apiMethod = apiMethod
+            .replace(/\?.*/g, '')
+            .replace(/\/\d+/g, '/');
         if (!platformId || !apiMethod)
-            throw new Error('Could not extract PlatformId and Methot from url: ' + url);
+            throw new Error('Could not extract PlatformId and Method from url: ' + url);
         return { platformId, apiMethod };
     }
     static extractRateLimitFromHeader(type, rateLimitHeader) {

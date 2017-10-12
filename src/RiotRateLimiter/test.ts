@@ -37,7 +37,7 @@ describe('RiotApiLimiter', () => {
         extractPlaformIdAndMethodFromUrl_private(host + '/lol/platform/v3/champions')
           .should.have.property('platformId').equals('euw1')
         extractPlaformIdAndMethodFromUrl_private(host + '/lol/platform/v3/champions')
-          .should.have.property('apiMethod').contains('champions')
+          .should.have.property('apiMethod').equals(host + '/lol/platform/v3/champions')
       });
     });
     describe('with query parameters', function () {
@@ -45,7 +45,7 @@ describe('RiotApiLimiter', () => {
         extractPlaformIdAndMethodFromUrl_private(host + '/lol/platform/v3/champions?freeToPlay=true')
           .should.have.property('platformId').equals('euw1')
         extractPlaformIdAndMethodFromUrl_private(host + '/lol/platform/v3/champions?freeToPlay=true')
-          .should.have.property('apiMethod').contains('champions')
+          .should.have.property('apiMethod').equals(host + '/lol/platform/v3/champions')
       });
     });
     describe('with numeric parameters at the end', function () {
@@ -53,14 +53,14 @@ describe('RiotApiLimiter', () => {
         extractPlaformIdAndMethodFromUrl_private(host + '/lol/platform/v3/champions/1')
           .should.have.property('platformId').equals('euw1')
         extractPlaformIdAndMethodFromUrl_private(host + '/lol/platform/v3/champions/1')
-          .should.have.property('apiMethod').contains('champions')
+          .should.have.property('apiMethod').equals(host + '/lol/platform/v3/champions/')
       });
       describe('and query parameter', function () {
         it('works for champions endpoint', function () {
           extractPlaformIdAndMethodFromUrl_private(host + '/lol/platform/v3/champions/1?freeToPlay=true')
             .should.have.property('platformId').equals('euw1')
           extractPlaformIdAndMethodFromUrl_private(host + '/lol/platform/v3/champions/1?freeToPlay=true')
-            .should.have.property('apiMethod').contains('champions')
+            .should.have.property('apiMethod').equals(host + '/lol/platform/v3/champions/')
         });
       });
     });
@@ -69,14 +69,30 @@ describe('RiotApiLimiter', () => {
         extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/2345226/by-champion/12')
           .should.have.property('platformId').equals('euw1')
         extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/2345226/by-champion/12')
-          .should.have.property('apiMethod').contains('champion-mastery')
+          .should.have.property('apiMethod').equals(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/by-champion/')
       });
       describe('and query paramter', function () {
         it('works for champion-mastery endpoint', function () {
           extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/2345226/by-champion/12?api_key=')
             .should.have.property('platformId').equals('euw1')
           extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/2345226/by-champion/12?api_key=')
-            .should.have.property('apiMethod').contains('champion-mastery')
+            .should.have.property('apiMethod').equals(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/by-champion/')
+        });
+      });
+    });
+    describe('with text parameters as by-xxxx parameter', function () {
+      it('works for champion-mastery endpoint', function () {
+        extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/SummonerName/by-champion/Akali')
+          .should.have.property('platformId').equals('euw1')
+        extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/SummonerName/by-champion/Akali')
+          .should.have.property('apiMethod').equals(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/by-champion/')
+      });
+      describe('and query paramter', function () {
+        it('works for champion-mastery endpoint', function () {
+          extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/SummonerName/by-champion/Akali?api_key=')
+            .should.have.property('platformId').equals('euw1')
+          extractPlaformIdAndMethodFromUrl_private(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/SummonerName/by-champion/Akali?api_key=')
+            .should.have.property('apiMethod').equals(host + '/lol/champion-mastery/v3/champion-masteries/by-summoner/by-champion/')
         });
       });
     });

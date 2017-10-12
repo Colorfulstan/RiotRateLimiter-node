@@ -77,11 +77,11 @@ export class RiotRateLimiter {
       if (!token) { throw new RiotRateLimiterParameterError('options.token has to be provided for the ApiRequest'); }
 
       let options = {
-        url             : url,
-        method          : 'GET',
-        headers         : {'X-Riot-Token': token},
+        url      : url,
+        method   : 'GET',
+        headers  : {'X-Riot-Token': token},
         resolveWithFullResponse,
-        transform       : (body, response, resolveWithFullResponse) => {
+        transform: (body, response, resolveWithFullResponse) => {
 
           let updatedLimits: RateLimitOptions[] = []
 
@@ -182,18 +182,31 @@ export class RiotRateLimiter {
 
   private static extractPlatformIdAndMethodFromUrl(url: string) {
     let platformId: string;
-    let apiMethod: string;
+    let apiMethod: string = url;
 
-    try {
-      platformId = url.match(/\/\/(.*?)\./)[1];
-      apiMethod  = url
-        .replace(/\?.*/g, '') // removing query
-        .replace(/\/\d+/g, '/'); // removing possible numeric parameter following "/"
-    } catch (e) {
-      throw new Error('Could not extract PlatformId and Methot from url: ' + url)
+    platformId = url.match(/\/\/(.*?)\./)[1];
+
+    // matches "by-something/whatever/",  "by-something/whatever" and "by-something/whatever?moreStuff"
+    let regex = /by-.*?\/(.*?)\/|by-.*?\/(.*?$)/g
+
+    let regexResult       = regex.exec(url)
+    const regexResultsArr = []
+    while (regexResult !== null) {
+      regexResultsArr.push(regexResult)
+      regexResult = regex.exec(url)
     }
 
-    if (!platformId || !apiMethod) throw new Error('Could not extract PlatformId and Methot from url: ' + url)
+    regexResultsArr.reverse().forEach(result => {
+      // find first slash -> beginning of parameter
+      const slashIndex = apiMethod.indexOf('/', result.index)
+      apiMethod        = apiMethod.substring(0, slashIndex + 1) + apiMethod.substring(result.index + result[0].length)
+    })
+
+    apiMethod = apiMethod
+      .replace(/\?.*/g, '') // removing query
+      .replace(/\/\d+/g, '/'); // removing possible numeric parameter following "/"
+
+    if (!platformId || !apiMethod) throw new Error('Could not extract PlatformId and Method from url: ' + url)
     return {platformId, apiMethod}
   }
 
