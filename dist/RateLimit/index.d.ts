@@ -69,5 +69,8 @@ export declare class RateLimit implements Comparable, RateLimitOptions {
     static compare(limit1: RateLimitOptions, limit2: RateLimitOptions): number;
     compareTo(comparable: RateLimitOptions): number;
     equals(limit: RateLimitOptions): boolean;
+    notifyAboutIdle(isIdle: any): void;
+    stopTimer(): void;
     restartTimeout(): void;
+    private hasUnpausedLimiters();
 }

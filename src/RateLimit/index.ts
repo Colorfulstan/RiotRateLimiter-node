@@ -219,8 +219,15 @@ export class RateLimit implements Comparable, RateLimitOptions {
       if (this.debug && !this.check(STRATEGY.BURST)) {
         console.log('starting resetTimeout for exceeded limit' + this._seconds * 1000, this.toString())
       }
+
+      const secondsSinceLastReset  = (Date.now() - this.timestampLastReset) / 1000
+      let secondsLeftInLimitWindow = this.seconds - secondsSinceLastReset
+      if (secondsLeftInLimitWindow < 0) {
+        secondsLeftInLimitWindow = this.seconds
+      }
+
       // NOTE: using timeout since interval is not testable for some reason with node-ts and sinon!?
-      this.resetTimeout = setTimeout(() => {this.reset()}, this._seconds * 1000)
+      this.resetTimeout = setTimeout(() => {this.reset()}, secondsLeftInLimitWindow * 1000)
     }
   }
 
@@ -252,9 +259,37 @@ export class RateLimit implements Comparable, RateLimitOptions {
     return this.compareTo(limit) === 0
   }
 
+  notifyAboutIdle(isIdle) {
+    if (isIdle && !this.hasUnpausedLimiters()) {
+      this.stopTimer()
+    }
+    if (!isIdle) {
+      this.startResetTimer()
+    }
+  }
+
+  stopTimer() {
+    clearTimeout(this.resetTimeout);
+    this.resetTimeout = null;
+  }
+
   restartTimeout() {
-    clearTimeout(this.resetTimeout)
-    this.resetTimeout = null
-    this.startResetTimer()
+    this.stopTimer()
+    if (this.hasUnpausedLimiters()) {
+      this.startResetTimer();
+    } else {
+      if (this.debug) {
+        console.log('RateLimit "' + this.toString() + '" does not have any active RateLimiters attached anymore,' +
+          ' keeping it paused')
+      }
+    }
+  }
+
+  private hasUnpausedLimiters() {
+    let hasActiveLimiters = false
+    this.limiters.forEach(limiter => {
+      hasActiveLimiters = hasActiveLimiters || !limiter.isIdle
+    })
+    return hasActiveLimiters
   }
 }

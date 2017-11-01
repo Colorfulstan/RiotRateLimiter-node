@@ -22,6 +22,9 @@ class RateLimiter {
         this.debug = debug;
         limits.forEach(limit => limit.addLimiter(this));
     }
+    get isIdle() {
+        return this.getQueueSize() === 0;
+    }
     addOrUpdateLimit(limit) {
         if (this.debug && limit.type === RateLimit_1.RATELIMIT_TYPE.BACKOFF || limit.type === RateLimit_1.RATELIMIT_TYPE.SYNC) {
             console.log('adding ' + RateLimit_1.RATELIMIT_TYPE_STRINGS[limit.type] + ' limit', limit.toString());
@@ -166,6 +169,7 @@ class RateLimiter {
         }
         this._isPaused = true;
         this.clearTimeoutAndInterval();
+        this.notifyLimitsAboutIdle(true);
     }
     setStrategy(strategy) {
         this.strategy = strategy;
@@ -328,7 +332,13 @@ class RateLimiter {
             console.log('unpausing limiter ' + this.toString());
         }
         this._isPaused = false;
+        this.notifyLimitsAboutIdle(this.isIdle);
         this.refresh();
+    }
+    notifyLimitsAboutIdle(isIdle) {
+        this.limits.forEach(limit => {
+            limit.notifyAboutIdle(isIdle);
+        });
     }
     getSpreadInterval() {
         return this.limits.reduce((longestInterval, limit) => {

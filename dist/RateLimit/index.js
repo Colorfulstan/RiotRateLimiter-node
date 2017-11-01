@@ -152,7 +152,12 @@ class RateLimit {
             if (this.debug && !this.check(index_1.STRATEGY.BURST)) {
                 console.log('starting resetTimeout for exceeded limit' + this._seconds * 1000, this.toString());
             }
-            this.resetTimeout = setTimeout(() => { this.reset(); }, this._seconds * 1000);
+            const secondsSinceLastReset = (Date.now() - this.timestampLastReset) / 1000;
+            let secondsLeftInLimitWindow = this.seconds - secondsSinceLastReset;
+            if (secondsLeftInLimitWindow < 0) {
+                secondsLeftInLimitWindow = this.seconds;
+            }
+            this.resetTimeout = setTimeout(() => { this.reset(); }, secondsLeftInLimitWindow * 1000);
         }
     }
     notifyLimiters() {
@@ -177,10 +182,36 @@ class RateLimit {
         }
         return this.compareTo(limit) === 0;
     }
-    restartTimeout() {
+    notifyAboutIdle(isIdle) {
+        if (isIdle && !this.hasUnpausedLimiters()) {
+            this.stopTimer();
+        }
+        if (!isIdle) {
+            this.startResetTimer();
+        }
+    }
+    stopTimer() {
         clearTimeout(this.resetTimeout);
         this.resetTimeout = null;
-        this.startResetTimer();
+    }
+    restartTimeout() {
+        this.stopTimer();
+        if (this.hasUnpausedLimiters()) {
+            this.startResetTimer();
+        }
+        else {
+            if (this.debug) {
+                console.log('RateLimit "' + this.toString() + '" does not have any active RateLimiters attached anymore,' +
+                    ' keeping it paused');
+            }
+        }
+    }
+    hasUnpausedLimiters() {
+        let hasActiveLimiters = false;
+        this.limiters.forEach(limiter => {
+            hasActiveLimiters = hasActiveLimiters || !limiter.isIdle;
+        });
+        return hasActiveLimiters;
     }
 }
 exports.RateLimit = RateLimit;
