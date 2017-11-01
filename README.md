@@ -83,6 +83,38 @@ and increase the backoff time exponentially with each unsuccessful try (2000, 40
 ### Other errors
 Will be passed back to the caller by rejecting the promise returned from ```.executing```
 
+## RateLimits
+
+RateLimit instances are exposed through ```RiotRateLimiter#getLimits``` and ```RiotRateLimiter#getLimitsForPlatformId```.
+
+### General Model
+
+For App RateLimits, the same instances are shared across all RateLimiters.
+
+Each ApiMethod has it's own RateLimiter instance with his own Method RateLimits.
+
+RateLimits and RateLimiters communicate about changes, to keep things in sync internally,
+and to be able to synergize with each other.
+
+Each RateLimiter has public access to all of it's RateLimit instances,
+and each RateLimit instance has public access to all RateLimiter instances,
+that are connected to it.
+
+This strong coupling is desired to a) keep the propably unneccessary
+complicated codebase easier to understand and modify and b) for being able
+to work directly on references for easy propagation of rate-limit changes,
+for example in the App RateLimits.
+
+### Using your own RateLimits
+
+Because of the tight coupling and that RateLimit instances are exposed,
+you also have public access to the internal RateLimiters. If you have a special use-case
+that temporarily requires extra strict RateLimits, or you just want to have
+a bit more control and transparency in what's going on, you can introduce your own RateLimits.
+Just be aware, that the public interface is not deliberately designed yet,
+so there might be breaking changes somewhen, but it will follow Semantic Versioning.
+
+
 ## Running the tests
 
 You will need to add your (development) api-key to a file ```/src/API_KEY``` to run the tests within ```src/RiotRateLimiter```
