@@ -277,9 +277,48 @@ export class RiotRateLimiter {
     })
   }
 
-  getLimits(platformId?:string) {
+  /**
+   * Returns all RateLimit instances for the given platformId.
+   * App-RateLimits references are included in each apiMethod array.
+   * @return {{[p: string]: {[p: string]: RateLimit[]}}}
+   */
+  getLimitsForPlatformId(platformId: string): { [apiMethod: string]: RateLimit[] } {
+    if (!platformId) {
+      throw new RiotRateLimiterParameterError('platformId is required')
+    }
 
+    platformId                = platformId.toLowerCase()
+    const limitersForPlatform = this.limitersPerPlatformId[platformId]
+    if (!limitersForPlatform) {
+      return {}
+    }
+    const limits = {}
+    for (let apiMethod in limitersForPlatform) {
+      limits[apiMethod] = limitersForPlatform[apiMethod].getLimits()
+    }
+    return limits
+  }
 
+  /**
+   * Returns all RateLimit instances.
+   * App-RateLimits references are included in each apiMethod array.
+   * @return {{[p: string]: {[p: string]: RateLimit[]}}}
+   */
+  getLimits(): { [platformId: string]: { [apiMethod: string]: RateLimit[] } } {
+    const limits = {}
+    if (!this.limitersPerPlatformId) {
+      return limits;
+    }
+
+    for (let platformId in this.limitersPerPlatformId) {
+      const limitersForPlatform = this.limitersPerPlatformId[platformId]
+      if (!limitersForPlatform) { return limits}
+
+      for (let apiMethod in limitersForPlatform) {
+        limits[platformId][apiMethod] = limitersForPlatform[apiMethod].getLimits()
+      }
+    }
+    return limits
   }
 
   /** Updates the App RateLimits stored here for shared usage across all method RateLimiter instances.
