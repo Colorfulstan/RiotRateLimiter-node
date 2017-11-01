@@ -189,7 +189,7 @@ export class RiotRateLimiter {
 
   private static extractPlatformIdAndMethodFromUrl(url: string) {
     let platformId: string;
-    let apiMethod: string = url;
+    let apiMethod: string = url.toLowerCase();
 
     platformId = url.match(/\/\/(.*?)\./)[1];
 
@@ -213,6 +213,7 @@ export class RiotRateLimiter {
       .replace(/\?.*/g, '') // removing query
       .replace(/\/\d+/g, '/'); // removing possible numeric parameter following "/"
 
+    apiMethod = apiMethod.substring(apiMethod.search(/\w\/\w/) + 1); // cut off host before first / after //
     if (!platformId || !apiMethod) throw new Error('Could not extract PlatformId and Method from url: ' + url)
     return {platformId, apiMethod}
   }
@@ -274,6 +275,11 @@ export class RiotRateLimiter {
         this.limitersPerPlatformId[platformId][methodName].setStrategy(strategy)
       })
     })
+  }
+
+  getLimits(platformId?:string) {
+
+
   }
 
   /** Updates the App RateLimits stored here for shared usage across all method RateLimiter instances.
