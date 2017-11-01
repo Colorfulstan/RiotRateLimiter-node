@@ -63,7 +63,8 @@ class RateLimit {
         return this.getRemainingRequests(strategy) !== 0;
     }
     getSecondsUntilReset() {
-        return ((this.seconds * 1000) - (Date.now() - this.timestampLastReset)) / 1000;
+        const remaingSeconds = ((this.seconds * 1000) - (Date.now() - this.timestampLastReset)) / 1000;
+        return remaingSeconds > 0 ? remaingSeconds : 0;
     }
     getMaximumRequests(strategy) {
         if (this.isUsingSafetyMargin(strategy)) {

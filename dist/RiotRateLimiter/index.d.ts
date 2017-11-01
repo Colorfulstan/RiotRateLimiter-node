@@ -9,7 +9,7 @@ export declare type RiotRateLimiterOptions = {
     platformId: string;
     apiMethod: string;
 };
-import { RATELIMIT_TYPE, RateLimitOptions } from '../RateLimit/index';
+import { RateLimit, RATELIMIT_TYPE, RateLimitOptions } from '../RateLimit/index';
 export declare class RiotRateLimiter {
     private limitersPerPlatformId;
     private strategy;
@@ -28,5 +28,13 @@ export declare class RiotRateLimiter {
     private static addRequestsCountFromHeader(type, updatedLimits, rateLimitCountHeader);
     toString(url: string): string;
     setStrategy(strategy: STRATEGY): void;
+    getLimitsForPlatformId(platformId: string): {
+        [apiMethod: string]: RateLimit[];
+    };
+    getLimits(): {
+        [platformId: string]: {
+            [apiMethod: string]: RateLimit[];
+        };
+    };
     private updateAppRateLimits(updateOptions?);
 }

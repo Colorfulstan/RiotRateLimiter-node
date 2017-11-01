@@ -132,7 +132,7 @@ class RiotRateLimiter {
     }
     static extractPlatformIdAndMethodFromUrl(url) {
         let platformId;
-        let apiMethod = url;
+        let apiMethod = url.toLowerCase();
         platformId = url.match(/\/\/(.*?)\./)[1];
         let regex = /by-.*?\/(.*?)\/|by-.*?\/(.*?$)/g;
         let regexResult = regex.exec(url);
@@ -148,6 +148,7 @@ class RiotRateLimiter {
         apiMethod = apiMethod
             .replace(/\?.*/g, '')
             .replace(/\/\d+/g, '/');
+        apiMethod = apiMethod.substring(apiMethod.search(/\w\/\w/) + 1);
         if (!platformId || !apiMethod)
             throw new Error('Could not extract PlatformId and Method from url: ' + url);
         return { platformId, apiMethod };
@@ -196,6 +197,37 @@ class RiotRateLimiter {
                 this.limitersPerPlatformId[platformId][methodName].setStrategy(strategy);
             });
         });
+    }
+    getLimitsForPlatformId(platformId) {
+        if (!platformId) {
+            throw new RiotRateLimiterParameterError_1.RiotRateLimiterParameterError('platformId is required');
+        }
+        platformId = platformId.toLowerCase();
+        const limitersForPlatform = this.limitersPerPlatformId[platformId];
+        if (!limitersForPlatform) {
+            return {};
+        }
+        const limits = {};
+        for (let apiMethod in limitersForPlatform) {
+            limits[apiMethod] = limitersForPlatform[apiMethod].getLimits();
+        }
+        return limits;
+    }
+    getLimits() {
+        const limits = {};
+        if (!this.limitersPerPlatformId) {
+            return limits;
+        }
+        for (let platformId in this.limitersPerPlatformId) {
+            const limitersForPlatform = this.limitersPerPlatformId[platformId];
+            if (!limitersForPlatform) {
+                return limits;
+            }
+            for (let apiMethod in limitersForPlatform) {
+                limits[platformId][apiMethod] = limitersForPlatform[apiMethod].getLimits();
+            }
+        }
+        return limits;
     }
     updateAppRateLimits(updateOptions = []) {
         if (updateOptions.length === 0) {
