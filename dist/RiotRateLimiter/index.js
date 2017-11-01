@@ -64,7 +64,12 @@ class RiotRateLimiter {
                             RiotRateLimiter.addRequestsCountFromHeader(index_1.RATELIMIT_TYPE.APP, appRateLimits, response.headers['x-app-rate-limit-count']);
                         }
                         this.updateAppRateLimits(appRateLimits);
-                        updatedLimits = updatedLimits.concat(appRateLimits);
+                        if (this.appLimits) {
+                            this.appLimits.forEach(limit => {
+                                rateLimiter.addOrUpdateLimit(limit);
+                            });
+                            updatedLimits = updatedLimits.concat(appRateLimits);
+                        }
                     }
                     if (response.headers['x-method-rate-limit']) {
                         const methodRateLimits = RiotRateLimiter.extractRateLimitFromHeader(index_1.RATELIMIT_TYPE.METHOD, response.headers['x-method-rate-limit']);

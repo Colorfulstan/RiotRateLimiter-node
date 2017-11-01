@@ -82,7 +82,6 @@ export class RiotRateLimiter {
         headers  : {'X-Riot-Token': token},
         resolveWithFullResponse,
         transform: (body, response, resolveWithFullResponse) => {
-
           let updatedLimits: RateLimitOptions[] = []
 
           if (this.debug) {
@@ -104,8 +103,14 @@ export class RiotRateLimiter {
             }
 
             this.updateAppRateLimits(appRateLimits)
-            updatedLimits = updatedLimits.concat(appRateLimits)
+            if (this.appLimits) {
+              this.appLimits.forEach(limit => {
+                rateLimiter.addOrUpdateLimit(limit)
+              })
+              updatedLimits = updatedLimits.concat(appRateLimits)
+            }
           }
+
 
           // Method limits
           // X-Method-Rate-Limit and X-Method-Rate-Limit-Count + Retry-After if 429
@@ -115,7 +120,6 @@ export class RiotRateLimiter {
             if (response.headers['x-method-rate-limit-count']) {
               RiotRateLimiter.addRequestsCountFromHeader(RATELIMIT_TYPE.METHOD, methodRateLimits, response.headers['x-method-rate-limit-count'])
             }
-
             updatedLimits = updatedLimits.concat(methodRateLimits)
           }
 
