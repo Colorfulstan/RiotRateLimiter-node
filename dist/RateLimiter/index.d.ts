@@ -20,7 +20,6 @@ export declare class RateLimiter {
     private strategy;
     private limits;
     private _isPaused;
-    readonly isIdle: boolean;
     constructor({limits, strategy, debug}: RateLimiterOptions);
     addOrUpdateLimit(limit: RateLimit): RateLimit;
     removeLimit(limit: RateLimit): RateLimit;
@@ -72,7 +71,6 @@ export declare class RateLimiter {
         reject: (reason?: any) => void;
     }[];
     private unpause();
-    private notifyLimitsAboutIdle(isIdle);
     private getSpreadInterval();
     isInitializing(): boolean;
     static createSyncRateLimit(debug?: boolean): RateLimit;

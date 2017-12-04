@@ -41,9 +41,6 @@ export class RateLimiter {
    * A paused limiter will not execute any queued items and newly scheduled items will be added to the queue directly.
    */
   private _isPaused: boolean;
-  public get isIdle(){
-    return this.getQueueSize() === 0
-  }
 
   constructor({limits, strategy = RateLimiter.STRATEGY.BURST, debug = false}: RateLimiterOptions) {
     if (!limits || !Array.isArray(limits) || limits.length === 0) {
@@ -253,8 +250,6 @@ export class RateLimiter {
 
     this._isPaused = true
     this.clearTimeoutAndInterval()
-    this.notifyLimitsAboutIdle(true)
-
   }
 
   /**
@@ -485,13 +480,7 @@ export class RateLimiter {
     }
 
     this._isPaused = false
-    this.notifyLimitsAboutIdle(this.isIdle)
     this.refresh()
-  }
-  private notifyLimitsAboutIdle(isIdle) {
-    this.limits.forEach(limit => {
-      limit.notifyAboutIdle(isIdle)
-    })
   }
 
   private getSpreadInterval(): number {
