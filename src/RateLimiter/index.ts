@@ -54,7 +54,7 @@ export class RateLimiter {
   }
 
   addOrUpdateLimit(limit: RateLimit) {
-    if (this.debug && limit.type === RATELIMIT_TYPE.BACKOFF || limit.type === RATELIMIT_TYPE.SYNC) {
+    if (this.debug && (limit.type === RATELIMIT_TYPE.BACKOFF || limit.type === RATELIMIT_TYPE.SYNC)) {
       console.log('adding ' + RATELIMIT_TYPE_STRINGS[limit.type] + ' limit', limit.toString())
     }
 

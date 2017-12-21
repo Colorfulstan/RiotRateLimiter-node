@@ -23,7 +23,7 @@ class RateLimiter {
         limits.forEach(limit => limit.addLimiter(this));
     }
     addOrUpdateLimit(limit) {
-        if (this.debug && limit.type === RateLimit_1.RATELIMIT_TYPE.BACKOFF || limit.type === RateLimit_1.RATELIMIT_TYPE.SYNC) {
+        if (this.debug && (limit.type === RateLimit_1.RATELIMIT_TYPE.BACKOFF || limit.type === RateLimit_1.RATELIMIT_TYPE.SYNC)) {
             console.log('adding ' + RateLimit_1.RATELIMIT_TYPE_STRINGS[limit.type] + ' limit', limit.toString());
         }
         const limitIndex = this.indexOfLimit(limit);
