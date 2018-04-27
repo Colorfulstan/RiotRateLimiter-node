@@ -48,7 +48,9 @@ export class RiotRateLimiter {
       this.limitersPerPlatformId[platformId] = {}
     }
     if (!this.limitersPerPlatformId[platformId][apiMethod]) {
-      console.log('creating sync rate limimter for ', platformId, apiMethod)
+      if (this.debug) {
+        console.log('creating sync rate limimter for ', platformId, apiMethod)
+      }
       this.limitersPerPlatformId[platformId][apiMethod] = new RateLimiter({
         limits  : [RateLimiter.createSyncRateLimit(this.debug)],
         strategy: this.strategy,
