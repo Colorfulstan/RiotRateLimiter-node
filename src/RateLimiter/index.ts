@@ -403,6 +403,7 @@ export class RateLimiter {
       // rare case propably
       const factorForEqualRights = Math.floor(Math.random() * 100)
       this.intervalProcessQueue  = setInterval(() => {this.processBurstQueue()}, 1000 + factorForEqualRights)
+      this.intervalProcessQueue.unref()
     }
   }
 
@@ -412,6 +413,7 @@ export class RateLimiter {
     this.intervalNextSpreadExecution = setInterval(() => {
       this.processSpreadLimitInterval()
     }, this.getSpreadInterval())
+    this.intervalNextSpreadExecution.unref()
   }
 
   /**
