@@ -274,6 +274,7 @@ class RateLimiter {
         if (this.queue.length !== 0) {
             const factorForEqualRights = Math.floor(Math.random() * 100);
             this.intervalProcessQueue = setInterval(() => { this.processBurstQueue(); }, 1000 + factorForEqualRights);
+            this.intervalProcessQueue.unref();
         }
     }
     refreshSpreadLimiter() {
@@ -281,6 +282,7 @@ class RateLimiter {
         this.intervalNextSpreadExecution = setInterval(() => {
             this.processSpreadLimitInterval();
         }, this.getSpreadInterval());
+        this.intervalNextSpreadExecution.unref();
     }
     execute(fn, onSuccess, onError) {
         try {

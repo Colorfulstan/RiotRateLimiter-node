@@ -222,6 +222,7 @@ export class RateLimit implements Comparable, RateLimitOptions {
       }
       // NOTE: using timeout since interval is not testable for some reason with node-ts and sinon!?
       this.resetTimeout = setTimeout(() => {this.reset()}, this._seconds * 1000)
+      this.resetTimeout.unref()
     }
   }
 

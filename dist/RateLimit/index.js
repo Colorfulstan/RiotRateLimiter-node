@@ -154,6 +154,7 @@ class RateLimit {
                 console.log('starting resetTimeout for exceeded limit' + this._seconds * 1000, this.toString());
             }
             this.resetTimeout = setTimeout(() => { this.reset(); }, this._seconds * 1000);
+            this.resetTimeout.unref();
         }
     }
     notifyLimiters() {

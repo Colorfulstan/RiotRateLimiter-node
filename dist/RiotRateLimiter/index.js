@@ -17,7 +17,9 @@ class RiotRateLimiter {
             this.limitersPerPlatformId[platformId] = {};
         }
         if (!this.limitersPerPlatformId[platformId][apiMethod]) {
-            console.log('creating sync rate limimter for ', platformId, apiMethod);
+            if (this.debug) {
+                console.log('creating sync rate limimter for ', platformId, apiMethod);
+            }
             this.limitersPerPlatformId[platformId][apiMethod] = new RateLimiter_1.RateLimiter({
                 limits: [RateLimiter_1.RateLimiter.createSyncRateLimit(this.debug)],
                 strategy: this.strategy,
