@@ -44,7 +44,9 @@
     "test:dist": "run-batch",
     "pkg-ok": "pkg-ok",
     "precommit": "run-batch",
-    "prepush": "run-batch"
+    "prepush": "run-batch",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "run-batch": {
     "build": [
@@ -125,11 +127,13 @@
     "bluebird": "~3.5.0",
     "request-promise": "~4.2.1",
     "runtime-engine-check": "^1.0.0",
-    "semver": "^5.3.0"
+    "semver": "^5.3.0",
+    "snyk": "^1.316.1"
   },
   "standard": {
     "env": [
       "mocha"
     ]
-  }
+  },
+  "snyk": true
 }
