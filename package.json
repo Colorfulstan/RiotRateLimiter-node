@@ -123,7 +123,7 @@
   },
   "dependencies": {
     "bluebird": "~3.5.0",
-    "request-promise": "~4.2.1",
+    "request-promise": "~4.2.6",
     "runtime-engine-check": "^1.0.0",
     "semver": "^5.3.0"
   },
